@@ -5,9 +5,21 @@
     "zoom":1
 }
 
+:: StoryInit
+
+
+:: StoryStylesheet [stylesheet]
+#ui-bar { display: none; }
+#ui-dialog { display: none; }
+
+
 :: StoryTitle
 My Super Duper Awesome StoryData
 
-:: Test
+
+::Test 
+
 
 :: Start
+Well hello there...
+Hii
