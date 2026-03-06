@@ -15,7 +15,7 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <style>
+        {{-- <style>
             /*! tailwindcss v4.0.7 | MIT License | https://tailwindcss.com */
             @layer theme {
 
@@ -1515,7 +1515,7 @@
                 inherits: false;
                 initial-value: ""
             }
-        </style>
+        </style> --}}
     @endif
 </head>
 
