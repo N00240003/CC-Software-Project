@@ -1,0 +1,136 @@
+:: Chapter1_Start
+/*
+    ── CHAPTER 1 ──────────────────────────────────────────────────────────────
+    Each chapter file lives in /chapters/ and is included automatically
+    by Tweego when you compile with:
+
+        tweego -o output/index.html main.twee chapters/
+
+    Update $currentChapter and $saveChapter at the start of every chapter.
+    This is what Laravel reads to know where the player is.
+    ───────────────────────────────────────────────────────────────────────────
+*/
+<<set $currentChapter to 1>>
+<<set $saveChapter to "Chapter1_Start">>
+
+# Chapter 1 — The Spark
+
+*A conflict is brewing between two colleagues, Alex and Jordan.*
+*You've been asked to help resolve it.*
+
+---
+
+Alex storms into the room. "Jordan took credit for my entire project report!"
+
+Jordan follows behind. "That's not true — I just submitted it because Alex missed the deadline!"
+
+**What do you do?**
+
+/* 
+    Each link goes to a different passage AND awards points.
+    <<set>> runs before the link is followed.
+    Format: [[Link text -> Passage name]]
+*/
+[[Step in and listen to both sides carefully -> Chapter1_Listen]]
+[[Tell Alex to calm down and drop it for now -> Chapter1_Deflect]]
+[[Side with Jordan — the deadline mattered -> Chapter1_SideJordan]]
+[[Tell them both to sort it out themselves -> Chapter1_Withdraw]]
+
+
+:: Chapter1_Listen
+/*
+    Collaborative choice — listening to both sides
+*/
+<<set $score_collaborator += 2>>
+<<set $flag_choseDialogue to true>>
+
+You ask both Alex and Jordan to sit down and take turns explaining their side without interruption.
+
+*Alex's frustration softens slightly. Jordan seems relieved.*
+
+"Okay," Alex says. "I guess I can explain what happened."
+
+[[Continue -> Chapter1_Mediation]]
+
+
+:: Chapter1_Deflect
+/*
+    Accommodator/Avoider choice — keeping the peace short-term
+*/
+<<set $score_accommodator += 1>>
+<<set $score_avoider += 1>>
+
+You gently tell Alex that the deadline had to be met, and suggest everyone moves forward.
+
+Alex doesn't look happy, but nods and walks away. The tension lingers.
+
+[[Continue -> Chapter1_End]]
+
+
+:: Chapter1_SideJordan
+/*
+    Competitor choice — decisive, outcome-focused
+*/
+<<set $score_competitor += 2>>
+
+"Jordan made the right call," you say firmly. "Deadlines exist for a reason."
+
+Alex looks hurt. Jordan looks vindicated. The issue technically resolved — but trust is fractured.
+
+[[Continue -> Chapter1_End]]
+
+
+:: Chapter1_Withdraw
+/*
+    Avoider choice — disengaging from conflict
+*/
+<<set $score_avoider += 2>>
+<<set $flag_choseWithdraw to true>>
+
+"This isn't really my place," you say, and step back.
+
+Both Alex and Jordan look frustrated. The conflict festers.
+
+[[Continue -> Chapter1_End]]
+
+
+:: Chapter1_Mediation
+/*
+    Reached only via the collaborative path — deeper resolution scene
+*/
+<<set $score_collaborator += 1>>
+<<set $score_compromiser += 1>>
+
+Over the next hour, you help Alex and Jordan map out what really happened. It turns out Alex had sent the report to Jordan for review — and Jordan misunderstood it as a submission request.
+
+"I'm sorry," Jordan says. "I genuinely thought you wanted me to send it."
+
+Alex exhales. "I should have been clearer."
+
+*A real resolution. Both parties feel heard.*
+
+[[Continue -> Chapter1_End]]
+
+
+:: Chapter1_End
+/*
+    All paths converge here before moving to the next chapter.
+    Update $saveChapter so the checkpoint is accurate.
+*/
+<<set $saveChapter to "Chapter1_End">>
+
+The first conflict has passed — but more challenges lie ahead.
+
+---
+
+/* 
+    Transition to Chapter 2.
+    In Tweego you can either link directly or use a button macro:
+
+    [[Next Chapter -> Chapter2_Start]]
+
+    Or with a styled button:
+*/
+<<button "Continue to Chapter 2">>
+    <<goto "Chapter2_Start">>
+<</button>>
