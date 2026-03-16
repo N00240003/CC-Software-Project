@@ -108,7 +108,7 @@ Before we begin — what's your name?
 
 
 :: GameOver
-# Thanks for playing, <<= $playerName>>!
+# Thanks for playing, <<= $playerName>>! Really pprecaiate it
 
 Your journey is complete. Here are your results:
 
