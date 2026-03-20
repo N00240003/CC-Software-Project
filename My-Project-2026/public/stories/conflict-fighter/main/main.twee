@@ -98,7 +98,7 @@ Conflict Resolution Journey
 
 # Welcome
 
-This is the beginning of your conflict resolution journey.
+This is the beginning of your conflict resolution journey. wohoo
 
 Before we begin — what's your name?
 
@@ -108,7 +108,7 @@ Before we begin — what's your name?
 
 
 :: GameOver
-# Thanks for playing, <<= $playerName>>! Really pprecaiate it
+# Thanks for playing, <<= $playerName>>! 
 
 Your journey is complete. Here are your results:
 

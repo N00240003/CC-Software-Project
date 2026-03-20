@@ -22,7 +22,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <iframe id="tweego-frame" src="/stories/conflict-fighter/output/index.html" width="100%"
-                        height="600px" frameborder="0">
+                        height="500px" frameborder="0">
                     </iframe>
                 </div>
             </div>
@@ -45,6 +45,11 @@
                     <button id="mute-btn"
                         class="mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300">
                         🔊 Mute Audio
+                    </button>
+
+                    <button id="save-game-btn"
+                        class="mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300">
+                        Save
                     </button>
 
                 </div>

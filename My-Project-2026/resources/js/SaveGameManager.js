@@ -94,7 +94,7 @@ class SaveGameManager {
         window.addEventListener("message", async (event) => {
             if (event.origin !== window.location.origin) return;
 
-            if (event.data.type === "SVAE_GAME") {
+            if (event.data.type === "SAVE_GAME") {
                 await fetch("/save-game", {
                     method: "POST",
                     headers: {
