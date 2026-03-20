@@ -117,7 +117,7 @@ Your journey is complete. Here are your results:
 /* Send final variables to Laravel for resolver type calculation */
 <<script>>
     saveToLaravel(null); /* null slot = final auto-save */
-<<\script>>
+<</script>>
 
 
 :: ResultsDisplay
@@ -249,5 +249,15 @@ window.addEventListener('message', function(event) {
 
         /* Navigate to the saved chapter passage */
         Engine.play(save.chapter);
+    }
+});
+
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'TRIGGER_SAVE') {
+        saveToLaravel(event.data.slot);
+    }
+    if (event.data.type === 'LOAD_GAME') {
+        Object.assign(State.variables, event.data.save.game_variables);
+        Engine.play(event.data.save.chapter);
     }
 });
