@@ -7,7 +7,9 @@ class SaveGameManager {
     }
 
     init() {
-        this.loadS;
+        this.loadSlots();
+        this.listenForIframeMessages();
+        this.bindMuteButton();
     }
 
     // Load lsots on page
@@ -81,9 +83,9 @@ class SaveGameManager {
 
     // Delete save slot
     async deleteSlot(id) {
-        if (!confirm("Delete this save?")) returen;
+        if (!confirm("Delete this save?")) return;
         await fetch(`/save-game/${id}`, {
-            methods: "DELETE",
+            method: "DELETE",
             headers: { "X-CSRF-TOKEN": this.csrfToken },
         });
         this.loadSlots();

@@ -46,12 +46,6 @@
                         class="mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300">
                         🔊 Mute Audio
                     </button>
-
-                    <button id="save-game-btn"
-                        class="mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300">
-                        Save
-                    </button>
-
                 </div>
             </div>
         </div>
