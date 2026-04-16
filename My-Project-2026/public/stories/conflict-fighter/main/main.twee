@@ -2,8 +2,41 @@
 
 This is a test passage.
 
-<<link "Send Ping">>
+<<link "Save Game">>
     <<script>>
-        window.parent.postMessage({ type: "PING" }, "*");
+    window.parent.postMessage({
+        type: "SAVE_GAME",
+        payload: {
+            slot: 1,
+            chapter: State.passage,
+            saveData: Save.serialize(),
+            variables: State.variables
+        }
+    }, "*");
     <</script>>
 <</link>>
+
+Script to load data
+<<script>>
+window.addEventListener("message", function (event) {
+
+    if (event.data.type === "LOAD_GAME") {
+        try {
+            Save.deserialize(event.data.save.save_data);
+            Engine.show();
+        } catch (e) {
+            console.error("Load failed:", e);
+        }
+    }
+
+});
+<</script>>
+
+:: StoryData
+{
+        "ifid": "F358EE9D-3B6D-4910-857D-BD5156C47C15"
+}
+
+:: StoryTitle
+Conflict Fighter
+

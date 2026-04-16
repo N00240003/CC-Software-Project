@@ -129,6 +129,7 @@ class SaveGameManager {
                     },
                     "*",
                 );
+                console.log("Message received:", event.data);
 
                 this.loadSlots();
             }
