@@ -34,25 +34,23 @@ class SaveGameController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'slot' => 'required|integer',
-            'chapter' => 'required|string',
-            'game_variables' => 'required|array',
+            'slot' => 'required|integer|min:1|max:5',
+            'chapter' => 'nullable|string',
+            'saveData' => 'required|string',
         ]);
 
-        // Calculate their resolver type
-        $resolverType = $this->calculateResolverType($data['game_variables']);
-
-        $save = SaveGame::updateOrCreate(
-            // Find row matching these conditions 
-            // (aka check user id )
-            ['user_id' => auth()->id(), 'slot' => $data['slot']],
+        \App\Models\SaveGame::updateOrCreate(
+            [
+                'user_id' => auth()->id(),
+                'slot' => $data['slot']
+            ],
             [
                 'chapter' => $data['chapter'],
-                'game_variables' => $data['game_variables'],
-                'resolver_type' => $resolverType,
+                'save_data' => $data['saveData']
             ]
         );
-        return response()->json(['success' => true, 'save' => $save]);
+
+        return response()->json(['status' => 'ok']);
     }
 
     /**

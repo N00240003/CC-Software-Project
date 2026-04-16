@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->unsignedInteger('slot'); // e.g. "Slot 1", "Slot 2", "Slot 3"
             $table->string('chapter'); // Current Tweego passage name
-            $table->json('game_variables'); // To store all Tweego SugarCube variables
+            $table->longText('save_data');  // Save full game state to load game
+            $table->json('game_variables')->nullable();
             $table->string('resolver_type')->nullable(); // What type of "conflict resolver" user is
             $table->timestamps();
         });
