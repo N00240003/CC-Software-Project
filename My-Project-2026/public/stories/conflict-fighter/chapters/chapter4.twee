@@ -1,0 +1,124 @@
+:: Chapter3_Start
+/*
+    ── CHAPTER 2 ──────────────────────────────────────────────────────────────
+    This chapter demonstrates:
+    - Branching based on a PREVIOUS choice (using flags)
+    - A three-way compromise scenario
+    - The <<if>> / <<elseif>> / <<else>> macro
+    ───────────────────────────────────────────────────────────────────────────
+*/
+<<set $currentChapter to 2>>
+<<set $saveChapter to "Chapter2_Start">>
+
+# Chapter 2 — The Negotiation
+
+/*
+    Example of reactive storytelling — the intro changes based on Chapter 1.
+    <<if>> checks a $variable or $flag.
+*/
+<<if $flag_choseDialogue>>
+    *Your reputation for listening has spread. A new group asks for your help.*
+<<elseif $flag_choseWithdraw>>
+    *People remember that you stepped back last time. They're watching closely now.*
+<<else>>
+    *A new conflict has emerged in a different department.*
+<</if>>
+
+---
+
+Two teams are fighting over a shared budget. Team A wants new equipment. Team B wants training funds. There's only enough for one.
+
+**How do you approach this?**
+
+[[Propose splitting the budget 50/50 -> Chapter2_Split]]
+[[Facilitate a joint pitch to get MORE funding -> Chapter2_Collaborate]]
+[[Let the teams vote and accept the outcome -> Chapter2_Democratic]]
+[[Recommend the manager decides unilaterally -> Chapter2_Defer]]
+
+
+:: Chapter2_Split
+<<set $score_compromiser += 2>>
+
+You propose a straight 50/50 split. Neither team gets everything they need, but both get something.
+
+*Team A grumbles. Team B accepts. It's not perfect, but the conflict cools.*
+
+[[Continue -> Chapter2_Reflection]]
+
+
+:: Chapter2_Collaborate
+<<set $score_collaborator += 3>>
+
+You spend two days helping both teams build a combined business case for increased funding.
+
+*The manager is impressed. A 30% budget increase is approved. Both teams win.*
+
+This took longer — but the outcome was transformative.
+
+[[Continue -> Chapter2_Reflection]]
+
+
+:: Chapter2_Democratic
+<<set $score_compromiser += 1>>
+<<set $score_accommodator += 1>>
+
+You set up a structured vote with clear criteria.
+
+Team A wins 6–4. Team B is disappointed but respects the process.
+
+[[Continue -> Chapter2_Reflection]]
+
+
+:: Chapter2_Defer
+<<set $score_avoider += 1>>
+<<set $score_competitor += 1>>
+
+You pass the decision upward. The manager picks Team B.
+
+Team A feels dismissed. You avoided the conflict — but didn't resolve it.
+
+[[Continue -> Chapter2_Reflection]]
+
+
+:: Chapter2_Reflection
+/*
+    A reflection passage — shows the player a brief summary of their style so far.
+    Good for pacing and engagement.
+*/
+<<set $saveChapter to "Chapter2_Reflection">>
+
+*You pause to reflect on your approach so far.*
+
+---
+
+<<if $score_collaborator gt 3>>
+    You're leaning toward a **collaborative** style — you look for win-win outcomes.
+<<elseif $score_compromiser gt 3>>
+    You're showing a **compromising** tendency — finding middle ground comes naturally.
+<<elseif $score_avoider gt 3>>
+    You've been **avoiding** conflict — sometimes wise, sometimes costly.
+<<elseif $score_competitor gt 3>>
+    You have a **competitive** streak — decisive and outcome-focused.
+<<else>>
+    Your style is still emerging.
+<</if>>
+
+---
+
+<<set $saveChapter to "Chapter2_End">>
+
+<<button "Continue to Chapter 3">>
+    <<goto "Chapter3_Start">>
+<</button>>
+
+/* 
+    ── ADD MORE CHAPTERS ──────────────────────────────────────────────────────
+    Copy this file to chapters/chapter3.twee, chapter4.twee etc.
+    Follow the same pattern:
+        1. Set $currentChapter and $saveChapter at the top
+        2. Write your scenario
+        3. Give 3-4 choices, each going to a branch passage
+        4. Each branch: <<set $score_X += N>> then converge to a ChapterN_End
+        5. At the end: <<set $saveChapter to "ChapterN_End">> and link forward
+    ───────────────────────────────────────────────────────────────────────────
+*/

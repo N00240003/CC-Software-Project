@@ -112,4 +112,9 @@ class SaveGameController extends Controller
         arsort($scores);
         return array_key_first($scores);
     }
+
+    public function savesPage()
+    {
+        return view('saves');
+    }
 }

@@ -29,23 +29,21 @@
         </div>
     </div>
 
-    {{-- Block 3: Save slots + controls --}}
+    {{-- Block 3: Save + Mute controls --}}
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+                <div class="p-6 flex gap-4 items-center">
 
-                    <h3 class="font-semibold text-lg mb-4">Save Game</h3>
+                    <button id="save-btn" onclick="saveManager.promptSaveSlot()"
+                        class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                        💾 Save Game
+                    </button>
 
-                    {{-- Save slots will be rendered here by JS --}}
-                    <div id="save-slots" class="grid grid-cols-5 gap-3 mb-4">
-                        <p class="text-gray-400 col-span-5">Loading slots...</p>
-                    </div>
-
-                    <button id="mute-btn"
-                        class="mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300">
+                    <button id="mute-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300">
                         🔊 Mute Audio
                     </button>
+
                 </div>
             </div>
         </div>
@@ -55,6 +53,31 @@
     <script src="/js/SaveGameManager.js"></script>
     <script>
         const saveManager = new SaveGameManager('tweego-frame', '{{ csrf_token() }}');
+        // Check if we arrived from saves page with a save to load
+        window.addEventListener('load', async function() {
+            const saveId = sessionStorage.getItem('loadSaveId');
+            if (!saveId) return;
+
+            sessionStorage.removeItem('loadSaveId'); // clear it
+
+            const res = await fetch('/save-game');
+            const slots = await res.json();
+
+            // Find the save by id across all slots
+            const save = Object.values(slots).find(s => s && s.id == saveId);
+            if (save) {
+                const frame = document.getElementById('tweego-frame');
+                frame.addEventListener('load', function() {
+                    // Small delay to make sure SugarCube is fully initialised
+                    setTimeout(function() {
+                        frame.contentWindow.postMessage({
+                            type: 'LOAD_GAME',
+                            save: save
+                        }, '*');
+                    }, 500);
+                });
+            }
+        });
     </script>
 
 </x-app-layout>

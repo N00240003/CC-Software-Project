@@ -35,6 +35,11 @@ Conflict Resolution Journey
 <<set $flag_choseWithdraw   to false>>
 /* Add more flags as your story grows */
 
+/* ── Chapter choices (for logbook) ── */
+<<set $choice_chapter1 to "">>
+<<set $choice_chapter2 to "">>
+<<set $choice_chapter3 to "">>
+
 /* ── Audio state ── */
 <<set $audioMuted to false>>
 
@@ -240,7 +245,7 @@ window.addEventListener('message', function(event) {
         UI.alert('✅ Game saved to Slot ' + event.data.slot + '!');
     }
 
-    /* Laravel is telling us to load a save — jump to that passage */
+    /* Laravel is telling us to load a save —> jump to that passage */
     if (event.data.type === 'LOAD_GAME') {
         var save = event.data.save;
 

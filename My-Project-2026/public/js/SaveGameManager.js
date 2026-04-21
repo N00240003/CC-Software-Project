@@ -7,9 +7,18 @@ class SaveGameManager {
     }
 
     init() {
-        this.loadSlots();
         this.listenForIframeMessages();
         this.bindMuteButton();
+    }
+
+    promptSaveSlot() {
+        const slot = prompt("Save to which slot? (1-5)");
+        const num = parseInt(slot);
+        if (num >= 1 && num <= 5) {
+            this.triggerSave(num);
+        } else if (slot !== null) {
+            alert("Please enter a number between 1 and 5.");
+        }
     }
 
     // Load lsots on page
