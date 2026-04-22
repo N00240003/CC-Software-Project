@@ -1,74 +1,72 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-2xl text-[#5B53ED] leading-tight">
             {{ __('Game!') }}
         </h2>
     </x-slot>
 
-    {{-- Block 1: Media --}}
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __('Media block') }}
+    <div class="max-w-7xl mx-auto py-8 space-y-6">
+
+        {{-- Media Banner --}}
+        <div class="w-full bg-[#D9D7FF] shadow-lg overflow-hidden">
+            <img src="/images/banner.jpg" alt="Game Banner" class="w-full h-64 object-cover">
+        </div>
+
+        {{-- Game + Controls Layout --}}
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            {{-- iFrame (takes 3/4 width) --}}
+            <div class="lg:col-span-3 bg-white shadow-lg rounded-2xl overflow-hidden">
+                <iframe id="tweego-frame" src="/stories/conflict-fighter/output/index.html"
+                    class="w-full h-[600px] border-0"></iframe>
+            </div>
+
+            {{-- Controls (side panel) --}}
+            <div class="bg-[#D9D7FF] shadow-lg rounded-2xl p-6 flex flex-col gap-4">
+
+                <h3 class="text-lg font-semibold text-[#5B53ED]">
+                    Controls
+                </h3>
+
+                <button id="save-btn" onclick="saveManager.promptSaveSlot()"
+                    class="w-full px-4 py-3 bg-[#6E68DE] text-white rounded-xl hover:bg-[#5B53ED] transition font-semibold">
+                    💾 Save Game
+                </button>
+
+                <button id="mute-btn"
+                    class="w-full px-4 py-3 bg-[#827ECF] text-white rounded-xl hover:bg-[#7470B8] transition font-semibold">
+                    🔊 Mute Audio
+                </button>
+
+                <div class="text-xs text-[#7470B8] mt-auto pt-4 border-t border-[#817AFF]">
+                    Tip: Your choices affect your conflict style score.
                 </div>
+
             </div>
         </div>
     </div>
 
-    {{-- Block 2: iFrame --}}
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <iframe id="tweego-frame" src="/stories/conflict-fighter/output/index.html" width="100%"
-                        height="500px" frameborder="0">
-                    </iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Block 3: Save + Mute controls --}}
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 flex gap-4 items-center">
-
-                    <button id="save-btn" onclick="saveManager.promptSaveSlot()"
-                        class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                        💾 Save Game
-                    </button>
-
-                    <button id="mute-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300">
-                        🔊 Mute Audio
-                    </button>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- JS Bridge: must be inside <x-app-layout> --}}
+    {{-- JS Bridge --}}
     <script src="/js/SaveGameManager.js"></script>
+
     <script>
         const saveManager = new SaveGameManager('tweego-frame', '{{ csrf_token() }}');
-        // Check if we arrived from saves page with a save to load
+
         window.addEventListener('load', async function() {
             const saveId = sessionStorage.getItem('loadSaveId');
             if (!saveId) return;
 
-            sessionStorage.removeItem('loadSaveId'); // clear it
+            sessionStorage.removeItem('loadSaveId');
 
             const res = await fetch('/save-game');
             const slots = await res.json();
 
-            // Find the save by id across all slots
             const save = Object.values(slots).find(s => s && s.id == saveId);
+
             if (save) {
                 const frame = document.getElementById('tweego-frame');
+
                 frame.addEventListener('load', function() {
-                    // Small delay to make sure SugarCube is fully initialised
                     setTimeout(function() {
                         frame.contentWindow.postMessage({
                             type: 'LOAD_GAME',

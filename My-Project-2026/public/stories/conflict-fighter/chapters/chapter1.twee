@@ -1,136 +1,103 @@
 :: Chapter1_Start
 /*
-    ── CHAPTER 1 ──────────────────────────────────────────────────────────────
-    Each chapter file lives in /chapters/ and is included automatically
-    by Tweego when you compile with:
+    ── CHAPTER 1 ──────────────────────────────────────────────────────────────
+    Each chapter file lives in /chapters/ and is included automatically
+    by Tweego when you compile with:
 
-        tweego -o output/index.html main.twee chapters/
+        tweego -o output/index.html main.twee chapters/
 
-    Update $currentChapter and $saveChapter at the start of every chapter.
-    This is what Laravel reads to know where the player is.
-    ───────────────────────────────────────────────────────────────────────────
+    Update $currentChapter and $saveChapter at the start of every chapter.
+    This is what Laravel reads to know where the player is.
+    ───────────────────────────────────────────────────────────────────────────
 */
 <<set $currentChapter to 1>>
 <<set $saveChapter to "Chapter1_Start">>
 
-# Chapter 1 — The Spark
+!! Chapter 1 — Dragons and Ringtones
 
-*A conflict is brewing between two colleagues, Alex and Jordan.*
-*You've been asked to help resolve it.*
+....
 
----
+You find yourself stumbling down a dark tunnel, in the nearing distance you see an orange glow. The dragon’s den is close now. Soon, you and your comrades will retrieve your village’s stolen gold.
 
-Alex storms into the room. "Jordan took credit for my entire project report!"
-
-Jordan follows behind. "That's not true — I just submitted it because Alex missed the deadline!"
+However, this will be no easy feat. What plan have you in place for this conflict my friend?
 
 **What do you do?**
 
-/* 
-    Each link goes to a different passage AND awards points.
-    <<set>> runs before the link is followed.
-    Format: [[Link text -> Passage name]]
-*/
-[[Step in and listen to both sides carefully -> Chapter1_Listen]]
-[[Tell Alex to calm down and drop it for now -> Chapter1_Deflect]]
-[[Side with Jordan — the deadline mattered -> Chapter1_SideJordan]]
-[[Tell them both to sort it out themselves -> Chapter1_Withdraw]]
-
-
-:: Chapter1_Listen
 /*
-    Collaborative choice — listening to both sides
+    Each link goes to a different passage AND awards points.
+    <<set>> runs before the link is followed.
+    Format: [[Link text -> Passage name]]
 */
-<<set $score_collaborator += 2>>
-<<set $flag_choseDialogue to true>>
 
-You ask both Alex and Jordan to sit down and take turns explaining their side without interruption.
+[[“I will slay this beast, glory and gold will be mine!” -> Dragons_Den][$score_competitor += 1]]
+[[“Let’s learn why the dragon took the gold, perhaps we can solve its problem and reclaim what’s ours without a fight?” -> Dragons_Den][$score_collaborator += 1]]
+[[“We don’t need every coin. We strike a deal, half the gold returned, half the dragon keeps.”-> Dragons_Den][$score_negotiator += 1]]
+[[“If the dragon desires gold, perhaps we can offer it a portion and leave in peace. No treasure is worth needless suffering.” -> Dragons_Den][$score_peacekeeper += 1]]
+[[“On second thought, I'm sure my comrades can handle this without me...” -> Dragons_Den][$score_avoider += 1]]
 
-*Alex's frustration softens slightly. Jordan seems relieved.*
+:: Dragons_Den
 
-"Okay," Alex says. "I guess I can explain what happened."
+Enough talk of plans, you’ve made it to the den!
 
-[[Continue -> Chapter1_Mediation]]
+Your group see the dragon, snoring asleep on it’s mountain of gold (which a good portion belonged to you)
+
+<img src="../media/dragon.png" class="image_block">
+
+“Lets vanquish it now while it’s unawares”, proclaims one of your comrades (the knight), stepping forward...before your other comrade (the mage) grabs him by the collar.
+
+“Shush, you fool! You’ll bring us all an early death!” whispers your magical friend furiously. 
+
+You hear the groups hushed voices going back and forth trying to decide how to proceed. Before you’re able to add your 2 cents, a glint catches your eye.
+
+Not the shine of gold coins or gleam off your knight’s armour...It’s something warmer...And very much alive.
+
+Your spine turns to ice and your group’s bickering suddenly dissipates.
+
+The dragon has awoken.
+And it’s glaring.
+Right.
+At. 
+[[You. -> Setting_Name]]
+
+:: Setting_Name
+Frozen on the spot, all you can do is watch. 
+The dragon lifts its head, slowly opens its massive, filled with many sharp teeth, maw and...
+
+Surprised, you don’t feel flaming hot fire, but rather hear a soft echo. Slowly it gets louder, and louder until you realize:
+
+It’s your name!
+<<textbox "$playerName" "Your name here please :)">>
+
+[[ You blink and the world shifts. -> Wakey_wakey]]
+
+:: Wakey_wakey
+//🎶 Pick up the phone $playerName, don’t ignore meee 🎶//
+
+A relieved sigh escapes you. You’re safely back in your room in your cozy bed. 
+What a strange dream. 
+You turn groggily to your sing-song saviour...
+
+//🎶 Puh, puh, pick up the phoooone 🎶//
+The...effective ringtone your friend Siobhán made you. She’s the most ‘triangle’ triangle you’ve ever met. Her pragmatic nature and excellent negotiation skills can’t be beat.
+
+“Ah, finally awake then sleepyhead! I’ll be at your door in 15, better be ready then!” 
+
+That’s right, you two are meeting up today to gather the gang for ‘the ultimate hangout’, something she’s been planning for the last month.
+
+Said ‘gang’ being your 4 other friends:
+Naomhán, an empathetic circle
+Amara, a creative pentagon
+Cillian, a competitive hexagon
+And Alex, a quiet square
+
+You jump out of bed and get ready for the day. Once your favourite outfit is on and you’re all set, you pause in front of your mirror.
+
+You take in the sight of your shape, random curves and corners. In this world, your actions quite literally shape you. Some burst into shape early in their lives, while others may take longer to form. And few even change shape a few times over the span of their life.
+
+You still remember the day Siobhán became her triangle self in the playground when you were younger. Your shape will reveal itself any day now, you can feel. 
+
+That day might even be today.
+
+A knock at your door breaks you out of your reminiscing. You’re greeted with Siobhán’s smile and together you head to the library to find you circle friend, [[Naomhán -> Chapter_2]].
 
 
-:: Chapter1_Deflect
-/*
-    Accommodator/Avoider choice — keeping the peace short-term
-*/
-<<set $score_accommodator += 1>>
-<<set $score_avoider += 1>>
-
-You gently tell Alex that the deadline had to be met, and suggest everyone moves forward.
-
-Alex doesn't look happy, but nods and walks away. The tension lingers.
-
-[[Continue -> Chapter1_End]]
-
-
-:: Chapter1_SideJordan
-/*
-    Competitor choice — decisive, outcome-focused
-*/
-<<set $score_competitor += 2>>
-
-"Jordan made the right call," you say firmly. "Deadlines exist for a reason."
-
-Alex looks hurt. Jordan looks vindicated. The issue technically resolved — but trust is fractured.
-
-[[Continue -> Chapter1_End]]
-
-
-:: Chapter1_Withdraw
-/*
-    Avoider choice — disengaging from conflict
-*/
-<<set $score_avoider += 2>>
-<<set $flag_choseWithdraw to true>>
-
-"This isn't really my place," you say, and step back.
-
-Both Alex and Jordan look frustrated. The conflict festers.
-
-[[Continue -> Chapter1_End]]
-
-
-:: Chapter1_Mediation
-/*
-    Reached only via the collaborative path — deeper resolution scene
-*/
-<<set $score_collaborator += 1>>
-<<set $score_compromiser += 1>>
-
-Over the next hour, you help Alex and Jordan map out what really happened. It turns out Alex had sent the report to Jordan for review — and Jordan misunderstood it as a submission request.
-
-"I'm sorry," Jordan says. "I genuinely thought you wanted me to send it."
-
-Alex exhales. "I should have been clearer."
-
-*A real resolution. Both parties feel heard.*
-
-[[Continue -> Chapter1_End]]
-
-
-:: Chapter1_End
-/*
-    All paths converge here before moving to the next chapter.
-    Update $saveChapter so the checkpoint is accurate.
-*/
-<<set $saveChapter to "Chapter1_End">>
-
-The first conflict has passed — but more challenges lie ahead.
-
----
-
-/* 
-    Transition to Chapter 2.
-    In Tweego you can either link directly or use a button macro:
-
-    [[Next Chapter -> Chapter2_Start]]
-
-    Or with a styled button:
-*/
-<<button "Continue to Chapter 2">>
-    <<goto "Chapter2_Start">>
-<</button>>

@@ -103,10 +103,74 @@ var saveAs=saveAs||navigator.msSaveBlob&&navigator.msSaveBlob.bind(navigator)||f
 	<!-- UUID://87FF2B7D-7DE2-4FE0-8578-27D847D3370C// --><tw-storydata name="Conflict Resolution Journey" startnode="6" creator="Tweego" creator-version="2.1.1+81d1d71" ifid="87FF2B7D-7DE2-4FE0-8578-27D847D3370C" zoom="1" format="SugarCube" format-version="2.30.0" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/*
     Put custom CSS here.
 */
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Playfair+Display&display=swap');
+
+/* Background + default text */
+body {
+    background-color: #F5EEDC;
+    color: #580101;
+    font-family: 'Lato', sans-serif;
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    color: #580101;
+    margin-top: 5%;
+    padding-top: 0%;
+}
+
+/* Headers */
+a {
+    color: #580101;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+     color: #7e0404;
+}
+/* Main story container */
+#passages {
+    max-width: 700px;
+    margin: 2rem auto;
+    line-height: 1.6;
+}
+
+input[type="text"] {
+    background-color: #fffaf0;
+    border: 2px solid #580101;
+    color: #580101;
+    padding: 0.5rem;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+}
+
+input[type="text"]:focus {
+    background-color: #fdf6e3;
+    border-color: #8a1c1c;
+    outline: none;
+}
+
+input[type="text"]:hover {
+    background-color: #fdf6e3;   
+    border-color: #8a1c1c;       
+}
 
 /* Hide the default SugarCube saves menu (Laravel handles saves) */
 #ui-bar-body #saves { display: none; }
+#ui-bar{
+    background-color: #F5EEDC;
+    color: #6d1515;
+}
 
+.image_block {
+   display: block;
+    margin: 1rem auto;
+    max-width: 100%;
+    height: auto;
+}
 .results-card {
     background: #f9f9f9;
     border-radius: 8px;
@@ -150,7 +214,7 @@ var saveAs=saveAs||navigator.msSaveBlob&&navigator.msSaveBlob.bind(navigator)||f
 }
 
 .save-slot-btn:hover { background: #c7d2fe; }
-.save-slot-empty { color: #9ca3af; font-style: italic; }</style><script role="script" id="twine-user-script" type="text/twine-javascript">/*
+.save-slot-empty { color: #faf3ee; font-style: italic; }</style><script role="script" id="twine-user-script" type="text/twine-javascript">/*
     StoryScript runs JS once when the story loads.
     Define the saveToLaravel() function here so it's available everywhere.
 */
@@ -174,7 +238,7 @@ window.saveToLaravel = function(slot) {
             score_compromiser:  State.variables.score_compromiser,
             score_avoider:      State.variables.score_avoider,
             score_competitor:   State.variables.score_competitor,
-            score_accommodator: State.variables.score_accommodator,
+            score_peacekeeper: State.variables.score_peacekeeper,
 
             /* Flags */
             flag_choseDialogue: State.variables.flag_choseDialogue,
@@ -198,7 +262,7 @@ window.addEventListener('message', function(event) {
         UI.alert('✅ Game saved to Slot ' + event.data.slot + '!');
     }
 
-    /* Laravel is telling us to load a save — jump to that passage */
+    /* Laravel is telling us to load a save —> jump to that passage */
     if (event.data.type === 'LOAD_GAME') {
         var save = event.data.save;
 
@@ -207,6 +271,16 @@ window.addEventListener('message', function(event) {
 
         /* Navigate to the saved chapter passage */
         Engine.play(save.chapter);
+    }
+});
+
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'TRIGGER_SAVE') {
+        saveToLaravel(event.data.slot);
+    }
+    if (event.data.type === 'LOAD_GAME') {
+        Object.assign(State.variables, event.data.save.game_variables);
+        Engine.play(event.data.save.chapter);
     }
 });</script><tw-passagedata pid="1" name="StoryInit" tags="" position="100,100" size="100,100">/*
     StoryInit runs ONCE at the very start of the game, before anything renders.
@@ -224,7 +298,7 @@ window.addEventListener('message', function(event) {
 &lt;&lt;set $score_compromiser    to 0&gt;&gt;
 &lt;&lt;set $score_avoider        to 0&gt;&gt;
 &lt;&lt;set $score_competitor     to 0&gt;&gt;
-&lt;&lt;set $score_accommodator   to 0&gt;&gt;
+&lt;&lt;set $score_peacekeeper   to 0&gt;&gt;
 
 /* ── Story flags (track key decisions) ── */
 /* Set these to true when a major branch is taken */
@@ -232,6 +306,13 @@ window.addEventListener('message', function(event) {
 &lt;&lt;set $flag_choseForce      to false&gt;&gt;
 &lt;&lt;set $flag_choseWithdraw   to false&gt;&gt;
 /* Add more flags as your story grows */
+
+/* ── Chapter choices (for logbook) ── */
+&lt;&lt;set $choice_chapter1 to &quot;&quot;&gt;&gt;
+&lt;&lt;set $choice_chapter2 to &quot;&quot;&gt;&gt;
+&lt;&lt;set $choice_chapter3 to &quot;&quot;&gt;&gt;
+&lt;&lt;set $choice_chapter4 to &quot;&quot;&gt;&gt;
+&lt;&lt;set $choice_chapter5 to &quot;&quot;&gt;&gt;
 
 /* ── Audio state ── */
 &lt;&lt;set $audioMuted to false&gt;&gt;
@@ -248,7 +329,7 @@ window.addEventListener('message', function(event) {
     Compromiser:   &lt;&lt;= $score_compromiser&gt;&gt;&lt;br&gt;
     Avoider:       &lt;&lt;= $score_avoider&gt;&gt;&lt;br&gt;
     Competitor:    &lt;&lt;= $score_competitor&gt;&gt;&lt;br&gt;
-    Accommodator:  &lt;&lt;= $score_accommodator&gt;&gt;&lt;br&gt;
+    Peace Keeper:  &lt;&lt;= $score_peacekeeper&gt;&gt;&lt;br&gt;
     &lt;hr&gt;
     &lt;strong&gt;Chapter:&lt;/strong&gt; &lt;&lt;= $currentChapter&gt;&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="StoryMenu" tags="" position="350,100" size="100,100">/*
@@ -274,15 +355,14 @@ window.addEventListener('message', function(event) {
 */
 &lt;&lt;set $saveChapter to &quot;Start&quot;&gt;&gt;
 
-# Welcome
+! Welcome
 
-This is the beginning of your conflict resolution journey. wohoo
+Hello there user, you are about to transport yourself in this  story full of shapes and their conflicts in every day life.
 
-Before we begin — what&#39;s your name?
+Will you be able to help your shape friends?
+And more importantly, will you be able to accept the shape you turn out to be?
 
-&lt;&lt;textbox &quot;$playerName&quot; &quot;Your name&quot;&gt;&gt;
-
-[[Begin the journey -&gt; Chapter1_Start]]</tw-passagedata><tw-passagedata pid="7" name="GameOver" tags="" position="850,100" size="100,100"># Thanks for playing, &lt;&lt;= $playerName&gt;&gt;! 
+[[Start your story -&gt; Chapter1_Start]]</tw-passagedata><tw-passagedata pid="7" name="GameOver" tags="" position="850,100" size="100,100"># Thanks for playing, &lt;&lt;= $playerName&gt;&gt;! 
 
 Your journey is complete. Here are your results:
 
@@ -291,7 +371,7 @@ Your journey is complete. Here are your results:
 /* Send final variables to Laravel for resolver type calculation */
 &lt;&lt;script&gt;&gt;
     saveToLaravel(null); /* null slot = final auto-save */
-&lt;&lt;\script&gt;&gt;</tw-passagedata><tw-passagedata pid="8" name="ResultsDisplay" tags="" position="975,100" size="100,100">/*
+&lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="8" name="ResultsDisplay" tags="" position="975,100" size="100,100">/*
     A reusable passage — include it anywhere with &lt;&lt;include &quot;ResultsDisplay&quot;&gt;&gt;
     Displays the player&#39;s final resolver type.
 */
@@ -302,119 +382,98 @@ Your journey is complete. Here are your results:
         &lt;tr&gt;&lt;td&gt;🔄 Compromiser&lt;/td&gt;   &lt;td&gt;&lt;&lt;= $score_compromiser&gt;&gt;&lt;/td&gt;&lt;/tr&gt;
         &lt;tr&gt;&lt;td&gt;🚶 Avoider&lt;/td&gt;       &lt;td&gt;&lt;&lt;= $score_avoider&gt;&gt;&lt;/td&gt;&lt;/tr&gt;
         &lt;tr&gt;&lt;td&gt;⚔️ Competitor&lt;/td&gt;    &lt;td&gt;&lt;&lt;= $score_competitor&gt;&gt;&lt;/td&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;🫶 Accommodator&lt;/td&gt;  &lt;td&gt;&lt;&lt;= $score_accommodator&gt;&gt;&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;🫶 Peace Keeper&lt;/td&gt;  &lt;td&gt;&lt;&lt;= $score_peacekeeper&gt;&gt;&lt;/td&gt;&lt;/tr&gt;
     &lt;/table&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="9" name="Chapter1_Start" tags="" position="1100,100" size="100,100">/*
-    ── CHAPTER 1 ──────────────────────────────────────────────────────────────
-    Each chapter file lives in /chapters/ and is included automatically
-    by Tweego when you compile with:
+    ── CHAPTER 1 ──────────────────────────────────────────────────────────────
+    Each chapter file lives in /chapters/ and is included automatically
+    by Tweego when you compile with:
 
-        tweego -o output/index.html main.twee chapters/
+        tweego -o output/index.html main.twee chapters/
 
-    Update $currentChapter and $saveChapter at the start of every chapter.
-    This is what Laravel reads to know where the player is.
-    ───────────────────────────────────────────────────────────────────────────
+    Update $currentChapter and $saveChapter at the start of every chapter.
+    This is what Laravel reads to know where the player is.
+    ───────────────────────────────────────────────────────────────────────────
 */
 &lt;&lt;set $currentChapter to 1&gt;&gt;
 &lt;&lt;set $saveChapter to &quot;Chapter1_Start&quot;&gt;&gt;
 
-# Chapter 1 — The Spark
+!! Chapter 1 — Dragons and Ringtones
 
-*A conflict is brewing between two colleagues, Alex and Jordan.*
-*You&#39;ve been asked to help resolve it.*
+....
 
----
+You find yourself stumbling down a dark tunnel, in the nearing distance you see an orange glow. The dragon’s den is close now. Soon, you and your comrades will retrieve your village’s stolen gold.
 
-Alex storms into the room. &quot;Jordan took credit for my entire project report!&quot;
-
-Jordan follows behind. &quot;That&#39;s not true — I just submitted it because Alex missed the deadline!&quot;
+However, this will be no easy feat. What plan have you in place for this conflict my friend?
 
 **What do you do?**
 
-/* 
-    Each link goes to a different passage AND awards points.
-    &lt;&lt;set&gt;&gt; runs before the link is followed.
-    Format: [[Link text -&gt; Passage name]]
+/*
+    Each link goes to a different passage AND awards points.
+    &lt;&lt;set&gt;&gt; runs before the link is followed.
+    Format: [[Link text -&gt; Passage name]]
 */
-[[Step in and listen to both sides carefully -&gt; Chapter1_Listen]]
-[[Tell Alex to calm down and drop it for now -&gt; Chapter1_Deflect]]
-[[Side with Jordan — the deadline mattered -&gt; Chapter1_SideJordan]]
-[[Tell them both to sort it out themselves -&gt; Chapter1_Withdraw]]</tw-passagedata><tw-passagedata pid="10" name="Chapter1_Listen" tags="" position="1225,100" size="100,100">/*
-    Collaborative choice — listening to both sides
-*/
-&lt;&lt;set $score_collaborator += 2&gt;&gt;
-&lt;&lt;set $flag_choseDialogue to true&gt;&gt;
 
-You ask both Alex and Jordan to sit down and take turns explaining their side without interruption.
+[[“I will slay this beast, glory and gold will be mine!” -&gt; Dragons_Den][$score_competitor += 1]]
+[[“Let’s learn why the dragon took the gold, perhaps we can solve its problem and reclaim what’s ours without a fight?” -&gt; Dragons_Den][$score_collaborator += 1]]
+[[“We don’t need every coin. We strike a deal, half the gold returned, half the dragon keeps.”-&gt; Dragons_Den][$score_negotiator += 1]]
+[[“If the dragon desires gold, perhaps we can offer it a portion and leave in peace. No treasure is worth needless suffering.” -&gt; Dragons_Den][$score_peacekeeper += 1]]
+[[“On second thought, I&#39;m sure my comrades can handle this without me...” -&gt; Dragons_Den][$score_avoider += 1]]</tw-passagedata><tw-passagedata pid="10" name="Dragons_Den" tags="" position="1225,100" size="100,100">Enough talk of plans, you’ve made it to the den!
 
-*Alex&#39;s frustration softens slightly. Jordan seems relieved.*
+Your group see the dragon, snoring asleep on it’s mountain of gold (which a good portion belonged to you)
 
-&quot;Okay,&quot; Alex says. &quot;I guess I can explain what happened.&quot;
+&lt;img src=&quot;../media/dragon.png&quot; class=&quot;image_block&quot;&gt;
 
-[[Continue -&gt; Chapter1_Mediation]]</tw-passagedata><tw-passagedata pid="11" name="Chapter1_Deflect" tags="" position="100,225" size="100,100">/*
-    Accommodator/Avoider choice — keeping the peace short-term
-*/
-&lt;&lt;set $score_accommodator += 1&gt;&gt;
-&lt;&lt;set $score_avoider += 1&gt;&gt;
+“Lets vanquish it now while it’s unawares”, proclaims one of your comrades (the knight), stepping forward...before your other comrade (the mage) grabs him by the collar.
 
-You gently tell Alex that the deadline had to be met, and suggest everyone moves forward.
+“Shush, you fool! You’ll bring us all an early death!” whispers your magical friend furiously. 
 
-Alex doesn&#39;t look happy, but nods and walks away. The tension lingers.
+You hear the groups hushed voices going back and forth trying to decide how to proceed. Before you’re able to add your 2 cents, a glint catches your eye.
 
-[[Continue -&gt; Chapter1_End]]</tw-passagedata><tw-passagedata pid="12" name="Chapter1_SideJordan" tags="" position="225,225" size="100,100">/*
-    Competitor choice — decisive, outcome-focused
-*/
-&lt;&lt;set $score_competitor += 2&gt;&gt;
+Not the shine of gold coins or gleam off your knight’s armour...It’s something warmer...And very much alive.
 
-&quot;Jordan made the right call,&quot; you say firmly. &quot;Deadlines exist for a reason.&quot;
+Your spine turns to ice and your group’s bickering suddenly dissipates.
 
-Alex looks hurt. Jordan looks vindicated. The issue technically resolved — but trust is fractured.
+The dragon has awoken.
+And it’s glaring.
+Right.
+At. 
+[[You. -&gt; Setting_Name]]</tw-passagedata><tw-passagedata pid="11" name="Setting_Name" tags="" position="100,225" size="100,100">Frozen on the spot, all you can do is watch. 
+The dragon lifts its head, slowly opens its massive, filled with many sharp teeth, maw and...
 
-[[Continue -&gt; Chapter1_End]]</tw-passagedata><tw-passagedata pid="13" name="Chapter1_Withdraw" tags="" position="350,225" size="100,100">/*
-    Avoider choice — disengaging from conflict
-*/
-&lt;&lt;set $score_avoider += 2&gt;&gt;
-&lt;&lt;set $flag_choseWithdraw to true&gt;&gt;
+Surprised, you don’t feel flaming hot fire, but rather hear a soft echo. Slowly it gets louder, and louder until you realize:
 
-&quot;This isn&#39;t really my place,&quot; you say, and step back.
+It’s your name!
+&lt;&lt;textbox &quot;$playerName&quot; &quot;Your name here please :)&quot;&gt;&gt;
 
-Both Alex and Jordan look frustrated. The conflict festers.
+[[ You blink and the world shifts. -&gt; Wakey_wakey]]</tw-passagedata><tw-passagedata pid="12" name="Wakey_wakey" tags="" position="225,225" size="100,100">//🎶 Pick up the phone $playerName, don’t ignore meee 🎶//
 
-[[Continue -&gt; Chapter1_End]]</tw-passagedata><tw-passagedata pid="14" name="Chapter1_Mediation" tags="" position="475,225" size="100,100">/*
-    Reached only via the collaborative path — deeper resolution scene
-*/
-&lt;&lt;set $score_collaborator += 1&gt;&gt;
-&lt;&lt;set $score_compromiser += 1&gt;&gt;
+A relieved sigh escapes you. You’re safely back in your room in your cozy bed. 
+What a strange dream. 
+You turn groggily to your sing-song saviour...
 
-Over the next hour, you help Alex and Jordan map out what really happened. It turns out Alex had sent the report to Jordan for review — and Jordan misunderstood it as a submission request.
+//🎶 Puh, puh, pick up the phoooone 🎶//
+The...effective ringtone your friend Siobhán made you. She’s the most ‘triangle’ triangle you’ve ever met. Her pragmatic nature and excellent negotiation skills can’t be beat.
 
-&quot;I&#39;m sorry,&quot; Jordan says. &quot;I genuinely thought you wanted me to send it.&quot;
+“Ah, finally awake then sleepyhead! I’ll be at your door in 15, better be ready then!” 
 
-Alex exhales. &quot;I should have been clearer.&quot;
+That’s right, you two are meeting up today to gather the gang for ‘the ultimate hangout’, something she’s been planning for the last month.
 
-*A real resolution. Both parties feel heard.*
+Said ‘gang’ being your 4 other friends:
+Naomhán, an empathetic circle
+Amara, a creative pentagon
+Cillian, a competitive hexagon
+And Alex, a quiet square
 
-[[Continue -&gt; Chapter1_End]]</tw-passagedata><tw-passagedata pid="15" name="Chapter1_End" tags="" position="600,225" size="100,100">/*
-    All paths converge here before moving to the next chapter.
-    Update $saveChapter so the checkpoint is accurate.
-*/
-&lt;&lt;set $saveChapter to &quot;Chapter1_End&quot;&gt;&gt;
+You jump out of bed and get ready for the day. Once your favourite outfit is on and you’re all set, you pause in front of your mirror.
 
-The first conflict has passed — but more challenges lie ahead.
+You take in the sight of your shape, random curves and corners. In this world, your actions quite literally shape you. Some burst into shape early in their lives, while others may take longer to form. And few even change shape a few times over the span of their life.
 
----
+You still remember the day Siobhán became her triangle self in the playground when you were younger. Your shape will reveal itself any day now, you can feel. 
 
-/* 
-    Transition to Chapter 2.
-    In Tweego you can either link directly or use a button macro:
+That day might even be today.
 
-    [[Next Chapter -&gt; Chapter2_Start]]
-
-    Or with a styled button:
-*/
-&lt;&lt;button &quot;Continue to Chapter 2&quot;&gt;&gt;
-    &lt;&lt;goto &quot;Chapter2_Start&quot;&gt;&gt;
-&lt;&lt;/button&gt;&gt;</tw-passagedata><tw-passagedata pid="16" name="Chapter2_Start" tags="" position="725,225" size="100,100">/*
+A knock at your door breaks you out of your reminiscing. You’re greeted with Siobhán’s smile and together you head to the library to find you circle friend, [[Naomhán -&gt; Chapter_2]].</tw-passagedata><tw-passagedata pid="13" name="Chapter2_Start" tags="" position="350,225" size="100,100">/*
     ── CHAPTER 2 ──────────────────────────────────────────────────────────────
     This chapter demonstrates:
     - Branching based on a PREVIOUS choice (using flags)
@@ -448,13 +507,13 @@ Two teams are fighting over a shared budget. Team A wants new equipment. Team B 
 [[Propose splitting the budget 50/50 -&gt; Chapter2_Split]]
 [[Facilitate a joint pitch to get MORE funding -&gt; Chapter2_Collaborate]]
 [[Let the teams vote and accept the outcome -&gt; Chapter2_Democratic]]
-[[Recommend the manager decides unilaterally -&gt; Chapter2_Defer]]</tw-passagedata><tw-passagedata pid="17" name="Chapter2_Split" tags="" position="850,225" size="100,100">&lt;&lt;set $score_compromiser += 2&gt;&gt;
+[[Recommend the manager decides unilaterally -&gt; Chapter2_Defer]]</tw-passagedata><tw-passagedata pid="14" name="Chapter2_Split" tags="" position="475,225" size="100,100">&lt;&lt;set $score_compromiser += 2&gt;&gt;
 
 You propose a straight 50/50 split. Neither team gets everything they need, but both get something.
 
 *Team A grumbles. Team B accepts. It&#39;s not perfect, but the conflict cools.*
 
-[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="18" name="Chapter2_Collaborate" tags="" position="975,225" size="100,100">&lt;&lt;set $score_collaborator += 3&gt;&gt;
+[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="15" name="Chapter2_Collaborate" tags="" position="600,225" size="100,100">&lt;&lt;set $score_collaborator += 3&gt;&gt;
 
 You spend two days helping both teams build a combined business case for increased funding.
 
@@ -462,21 +521,21 @@ You spend two days helping both teams build a combined business case for increas
 
 This took longer — but the outcome was transformative.
 
-[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="19" name="Chapter2_Democratic" tags="" position="1100,225" size="100,100">&lt;&lt;set $score_compromiser += 1&gt;&gt;
+[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="16" name="Chapter2_Democratic" tags="" position="725,225" size="100,100">&lt;&lt;set $score_compromiser += 1&gt;&gt;
 &lt;&lt;set $score_accommodator += 1&gt;&gt;
 
 You set up a structured vote with clear criteria.
 
 Team A wins 6–4. Team B is disappointed but respects the process.
 
-[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="20" name="Chapter2_Defer" tags="" position="1225,225" size="100,100">&lt;&lt;set $score_avoider += 1&gt;&gt;
+[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="17" name="Chapter2_Defer" tags="" position="850,225" size="100,100">&lt;&lt;set $score_avoider += 1&gt;&gt;
 &lt;&lt;set $score_competitor += 1&gt;&gt;
 
 You pass the decision upward. The manager picks Team B.
 
 Team A feels dismissed. You avoided the conflict — but didn&#39;t resolve it.
 
-[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="21" name="Chapter2_Reflection" tags="" position="100,350" size="100,100">/*
+[[Continue -&gt; Chapter2_Reflection]]</tw-passagedata><tw-passagedata pid="18" name="Chapter2_Reflection" tags="" position="975,225" size="100,100">/*
     A reflection passage — shows the player a brief summary of their style so far.
     Good for pacing and engagement.
 */
@@ -516,7 +575,41 @@ Team A feels dismissed. You avoided the conflict — but didn&#39;t resolve it.
         4. Each branch: &lt;&lt;set $score_X += N&gt;&gt; then converge to a ChapterN_End
         5. At the end: &lt;&lt;set $saveChapter to &quot;ChapterN_End&quot;&gt;&gt; and link forward
     ───────────────────────────────────────────────────────────────────────────
-*/</tw-passagedata></tw-storydata>
+*/</tw-passagedata><tw-passagedata pid="19" name="Chapter3_Start" tags="" position="1100,225" size="100,100">/*
+    ── CHAPTER 2 ──────────────────────────────────────────────────────────────
+    This chapter demonstrates:
+    - Branching based on a PREVIOUS choice (using flags)
+    - A three-way compromise scenario
+    - The &lt;&lt;if&gt;&gt; / &lt;&lt;elseif&gt;&gt; / &lt;&lt;else&gt;&gt; macro
+    ───────────────────────────────────────────────────────────────────────────
+*/
+&lt;&lt;set $currentChapter to 2&gt;&gt;
+&lt;&lt;set $saveChapter to &quot;Chapter2_Start&quot;&gt;&gt;
+
+# Chapter 2 — The Negotiation
+
+/*
+    Example of reactive storytelling — the intro changes based on Chapter 1.
+    &lt;&lt;if&gt;&gt; checks a $variable or $flag.
+*/
+&lt;&lt;if $flag_choseDialogue&gt;&gt;
+    *Your reputation for listening has spread. A new group asks for your help.*
+&lt;&lt;elseif $flag_choseWithdraw&gt;&gt;
+    *People remember that you stepped back last time. They&#39;re watching closely now.*
+&lt;&lt;else&gt;&gt;
+    *A new conflict has emerged in a different department.*
+&lt;&lt;/if&gt;&gt;
+
+---
+
+Two teams are fighting over a shared budget. Team A wants new equipment. Team B wants training funds. There&#39;s only enough for one.
+
+**How do you approach this?**
+
+[[Propose splitting the budget 50/50 -&gt; Chapter2_Split]]
+[[Facilitate a joint pitch to get MORE funding -&gt; Chapter2_Collaborate]]
+[[Let the teams vote and accept the outcome -&gt; Chapter2_Democratic]]
+[[Recommend the manager decides unilaterally -&gt; Chapter2_Defer]]</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
 	/*! SugarCube JS */
 	if(document.documentElement.getAttribute("data-init")==="loading"){!function(window,document,jQuery,undefined){"use strict";function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _toConsumableArray(e){if(Array.isArray(e)){for(var t=0,r=Array(e.length);t<e.length;t++)r[t]=e[t];return r}return Array.from(e)}var _createClass=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),_slicedToArray=function(){function e(e,t){var r=[],n=!0,a=!1,i=undefined;try{for(var o,s=e[Symbol.iterator]();!(n=(o=s.next()).done)&&(r.push(o.value),!t||r.length!==t);n=!0);}catch(e){a=!0,i=e}finally{try{!n&&s.return&&s.return()}finally{if(a)throw i}}return r}return function(t,r){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,r);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},errorPrologRegExp=/^(?:(?:uncaught\s+(?:exception:\s+)?)?\w*(?:error|exception|_err):\s+)+/i,Alert=function(){function e(e,t,r,n){var a="fatal"===e,i="Apologies! "+(a?"A fatal":"An")+" error has occurred.";i+=a?" Aborting.":" You may be able to continue, but some parts may not work properly.",null==t&&null==r||(i+="\n\nError",null!=t&&(i+=" ["+t+"]"),i+=null!=r?": "+r.replace(errorPrologRegExp,"")+".":": unknown error."),"object"===(void 0===n?"undefined":_typeof(n))&&n.stack&&(i+="\n\nStack Trace:\n"+n.stack),window.alert(i)}function t(t,r,n){e(null,t,r,n)}function r(t,r,n){e("fatal",t,r,n)}return function(e){window.onerror=function(n,a,i,o,s){"complete"===document.readyState?t(null,n,s):(r(null,n,s),window.onerror=e,"function"==typeof window.onerror&&window.onerror.apply(this,arguments))}}(window.onerror),Object.freeze(Object.defineProperties({},{error:{value:t},fatal:{value:r}}))}(),Patterns=function(){var e=function(){var e=new Map([[" ","\\u0020"],["\f","\\f"],["\n","\\n"],["\r","\\r"],["\t","\\t"],["\v","\\v"],[" ","\\u00a0"],[" ","\\u1680"],["᠎","\\u180e"],[" ","\\u2000"],[" ","\\u2001"],[" ","\\u2002"],[" ","\\u2003"],[" ","\\u2004"],[" ","\\u2005"],[" ","\\u2006"],[" ","\\u2007"],[" ","\\u2008"],[" ","\\u2009"],[" ","\\u200a"],["\u2028","\\u2028"],["\u2029","\\u2029"],[" ","\\u202f"],[" ","\\u205f"],["　","\\u3000"],["\ufeff","\\ufeff"]]),t=/^\s$/,r="";return e.forEach(function(e,n){t.test(n)||(r+=e)}),r?"[\\s"+r+"]":"\\s"}(),t="\\s"===e?"\\S":e.replace(/^\[/,"[^"),r="[0-9A-Z_a-z\\-\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0150\\u0170\\u0151\\u0171]",n=r.replace("\\-",""),a=function(){return"("+r+"+)\\(([^\\)\\|\\n]+)\\):|("+r+"+):([^;\\|\\n]+);|((?:\\."+r+"+)+);|((?:#"+r+"+)+);"}();return Object.freeze({space:e,spaceNoTerminator:"[\\u0020\\f\\t\\v\\u00a0\\u1680\\u180e\\u2000-\\u200a\\u202f\\u205f\\u3000\\ufeff]",lineTerminator:"[\\n\\r\\u2028\\u2029]",notSpace:t,anyChar:"(?:.|[\\n\\r\\u2028\\u2029])",anyLetter:r,anyLetterStrict:n,identifierFirstChar:"[$A-Z_a-z]",identifierNextChar:"[$0-9A-Z_a-z]",identifier:"[$A-Z_a-z][$0-9A-Z_a-z]*",variableSigil:"[$_]",variable:"[$_][$A-Z_a-z][$0-9A-Z_a-z]*",macroName:"[A-Za-z][\\w-]*|[=-]",templateName:"[A-Za-z][\\w-]*",cssImage:"\\[[<>]?[Ii][Mm][Gg]\\[(?:\\s|\\S)*?\\]\\]+",inlineCss:a,url:"(?:file|https?|mailto|ftp|javascript|irc|news|data):[^\\s'\"]+"})}();!function(){!function(e){if(e&&e.prototype&&null==e.prototype.firstElementChild){var t=Node.ELEMENT_NODE;Object.defineProperty(e.prototype,"firstElementChild",{get:function(){for(var e=this.childNodes,r=0;r<e.length;++r){var n=e[r];if(n.nodeType===t)return n}return null}})}}(window.Node||window.Element)}(),function(){function e(e,t){var r=Number.parseInt(e,10)||0;if(r<1)return"";var n=void 0===t?"":String(t);for(""===n&&(n=" ");n.length<r;){var a=n.length,i=r-a;n+=a>i?n.slice(0,i):n}return n.length>r&&(n=n.slice(0,r)),n}var t=function(){function e(e,n){var a=String(e);if(!a)return a;switch(n){case"start":return t.test(a)?a.replace(t,""):a;case"end":return r.test(a)?a.replace(r,""):a;default:throw new Error('_trimString called with incorrect where parameter value: "'+n+'"')}}var t=new RegExp("^"+Patterns.space+Patterns.space+"*"),r=new RegExp(""+Patterns.space+Patterns.space+"*$");return e}();Array.prototype.flat||Object.defineProperty(Array.prototype,"flat",{configurable:!0,writable:!0,value:function(){function e(){if(null==this)throw new TypeError("Array.prototype.flat called on null or undefined");var t=0===arguments.length?1:Number(arguments[0])||0;return t<1?Array.prototype.slice.call(this):Array.prototype.reduce.call(this,function(r,n){return n instanceof Array?r.push.apply(r,_toConsumableArray(e.call(n,t-1))):r.push(n),r},[])}return e}()}),Array.prototype.flatMap||Object.defineProperty(Array.prototype,"flatMap",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.flatMap called on null or undefined");return Array.prototype.map.apply(this,arguments).flat()}}),Array.prototype.includes||Object.defineProperty(Array.prototype,"includes",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.includes called on null or undefined");if(0===arguments.length)return!1;var e=this.length>>>0;if(0===e)return!1;var t=arguments[0],r=Number(arguments[1])||0;for(r<0&&(r=Math.max(0,e+r));r<e;++r){var n=this[r];if(n===t||n!==n&&t!==t)return!0}return!1}}),Object.entries||Object.defineProperty(Object,"entries",{configurable:!0,writable:!0,value:function(e){if("object"!==(void 0===e?"undefined":_typeof(e))||null===e)throw new TypeError("Object.entries object parameter must be an object");return Object.keys(e).map(function(t){return[t,e[t]]})}}),Object.fromEntries||Object.defineProperty(Object,"fromEntries",{configurable:!0,writable:!0,value:function(e){return Array.from(e).reduce(function(e,t){if(Object(t)!==t)throw new TypeError("Object.fromEntries iterable parameter must yield objects");return t[0]in e?Object.defineProperty(e,t[0],{configurable:!0,enumerable:!0,writable:!0,value:t[1]}):e[t[0]]=t[1],e},{})}}),Object.getOwnPropertyDescriptors||Object.defineProperty(Object,"getOwnPropertyDescriptors",{configurable:!0,writable:!0,value:function(e){if(null==e)throw new TypeError("Object.getOwnPropertyDescriptors object parameter is null or undefined");var t=Object(e);return Reflect.ownKeys(t).reduce(function(e,r){var n=Object.getOwnPropertyDescriptor(t,r);return void 0!==n&&(r in e?Object.defineProperty(e,r,{configurable:!0,enumerable:!0,writable:!0,value:n}):e[r]=n),e},{})}}),Object.values||Object.defineProperty(Object,"values",{configurable:!0,writable:!0,value:function(e){if("object"!==(void 0===e?"undefined":_typeof(e))||null===e)throw new TypeError("Object.values object parameter must be an object");return Object.keys(e).map(function(t){return e[t]})}}),String.prototype.padStart||Object.defineProperty(String.prototype,"padStart",{configurable:!0,writable:!0,value:function(t,r){if(null==this)throw new TypeError("String.prototype.padStart called on null or undefined");var n=String(this),a=n.length,i=Number.parseInt(t,10);return i<=a?n:e(i-a,r)+n}}),String.prototype.padEnd||Object.defineProperty(String.prototype,"padEnd",{configurable:!0,writable:!0,value:function(t,r){if(null==this)throw new TypeError("String.prototype.padEnd called on null or undefined");var n=String(this),a=n.length,i=Number.parseInt(t,10);return i<=a?n:n+e(i-a,r)}}),String.prototype.trimStart||Object.defineProperty(String.prototype,"trimStart",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimStart called on null or undefined");return t(this,"start")}}),String.prototype.trimLeft||Object.defineProperty(String.prototype,"trimLeft",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimLeft called on null or undefined");return t(this,"start")}}),String.prototype.trimEnd||Object.defineProperty(String.prototype,"trimEnd",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimEnd called on null or undefined");return t(this,"end")}}),String.prototype.trimRight||Object.defineProperty(String.prototype,"trimRight",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimRight called on null or undefined");return t(this,"end")}})}(),function(){function _random(){var e=void 0,t=void 0;switch(arguments.length){case 0:throw new Error("_random called with insufficient parameters");case 1:e=0,t=arguments[0];break;default:e=arguments[0],t=arguments[1]}if(e>t){var r=[t,e];e=r[0],t=r[1]}return Math.floor(_nativeMathRandom()*(t-e+1))+e}function _randomIndex(e,t){var r=void 0,n=void 0;switch(t.length){case 1:r=0,n=e-1;break;case 2:r=0,n=Math.trunc(t[1]);break;default:r=Math.trunc(t[1]),n=Math.trunc(t[2])}return Number.isNaN(r)?r=0:!Number.isFinite(r)||r>=e?r=e-1:r<0&&(r=e+r)<0&&(r=0),Number.isNaN(n)?n=0:!Number.isFinite(n)||n>=e?n=e-1:n<0&&(n=e+n)<0&&(n=e-1),_random(r,n)}function _getCodePointStartAndEnd(e,t){var r=e.charCodeAt(t);if(Number.isNaN(r))return{char:"",start:-1,end:-1};if(r<55296||r>57343)return{char:e.charAt(t),start:t,end:t};if(r>=55296&&r<=56319){var n=t+1;if(n>=e.length)throw new Error("high surrogate without trailing low surrogate");var a=e.charCodeAt(n);if(a<56320||a>57343)throw new Error("high surrogate without trailing low surrogate");return{char:e.charAt(t)+e.charAt(n),start:t,end:n}}if(0===t)throw new Error("low surrogate without leading high surrogate");var i=t-1,o=e.charCodeAt(i);if(o<55296||o>56319)throw new Error("low surrogate without leading high surrogate");return{char:e.charAt(i)+e.charAt(t),start:i,end:t}}var _nativeMathRandom=Math.random;Object.defineProperty(Array,"random",{configurable:!0,writable:!0,value:function(e){if("object"!==(void 0===e?"undefined":_typeof(e))||null===e||!Object.prototype.hasOwnProperty.call(e,"length"))throw new TypeError("Array.random array parameter must be an array or array-lke object");var t=e.length>>>0;if(0!==t){return e[0===arguments.length?_random(0,t-1):_randomIndex(t,Array.prototype.slice.call(arguments,1))]}}}),Object.defineProperty(Array.prototype,"concatUnique",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.concatUnique called on null or undefined");var e=Array.from(this);if(0===arguments.length)return e;var t=Array.prototype.reduce.call(arguments,function(e,t){return e.concat(t)},[]),r=t.length;if(0===r)return e;for(var n=Array.prototype.indexOf,a=Array.prototype.push,i=0;i<r;++i){var o=t[i];-1===n.call(e,o)&&a.call(e,o)}return e}}),Object.defineProperty(Array.prototype,"count",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.count called on null or undefined");for(var e=Array.prototype.indexOf,t=arguments[0],r=Number(arguments[1])||0,n=0;-1!==(r=e.call(this,t,r));)++n,++r;return n}}),Object.defineProperty(Array.prototype,"delete",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.delete called on null or undefined");if(0===arguments.length)return[];var e=this.length>>>0;if(0===e)return[];for(var t=Array.prototype.concat.apply([],arguments),r=t.length,n=[],a=0;a<e;++a)for(var i=this[a],o=0;o<r;++o){var s=t[o];if(i===s||i!==i&&s!==s){n.push(a);break}}for(var u=[],l=0,c=n.length;l<c;++l)u[l]=this[n[l]];for(var d=Array.prototype.splice,f=n.length-1;f>=0;--f)d.call(this,n[f],1);return u}}),Object.defineProperty(Array.prototype,"deleteAt",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.deleteAt called on null or undefined");if(0===arguments.length)return[];var e=this.length>>>0;if(0===e)return[];for(var t=Array.prototype.splice,r=[].concat(_toConsumableArray(new Set(Array.prototype.concat.apply([],arguments).map(function(t){return t<0?Math.max(0,e+t):t})).values())),n=[].concat(_toConsumableArray(r)).sort(function(e,t){return t-e}),a=[],i=0,o=r.length;i<o;++i)a[i]=this[r[i]];for(var s=0,u=n.length;s<u;++s)t.call(this,n[s],1);return a}}),Object.defineProperty(Array.prototype,"deleteWith",{configurable:!0,writable:!0,value:function(e,t){if(null==this)throw new TypeError("Array.prototype.deleteWith called on null or undefined");if("function"!=typeof e)throw new Error("Array.prototype.deleteWith predicate parameter must be a function");var r=this.length>>>0;if(0===r)return[];for(var n=Array.prototype.splice,a=[],i=[],o=0;o<r;++o)e.call(t,this[o],o,this)&&(i.push(this[o]),a.push(o));for(var s=a.length-1;s>=0;--s)n.call(this,a[s],1);return i}}),Object.defineProperty(Array.prototype,"first",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.first called on null or undefined");if(0!=this.length>>>0)return this[0]}}),Object.defineProperty(Array.prototype,"includesAll",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.includesAll called on null or undefined");if(1===arguments.length)return Array.isArray(arguments[0])?Array.prototype.includesAll.apply(this,arguments[0]):Array.prototype.includes.apply(this,arguments);for(var e=0,t=arguments.length;e<t;++e)if(!Array.prototype.some.call(this,function(e){return e===this.val||e!==e&&this.val!==this.val},{val:arguments[e]}))return!1;return!0}}),Object.defineProperty(Array.prototype,"includesAny",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.includesAny called on null or undefined");if(1===arguments.length)return Array.isArray(arguments[0])?Array.prototype.includesAny.apply(this,arguments[0]):Array.prototype.includes.apply(this,arguments);for(var e=0,t=arguments.length;e<t;++e)if(Array.prototype.some.call(this,function(e){return e===this.val||e!==e&&this.val!==this.val},{val:arguments[e]}))return!0;return!1}}),Object.defineProperty(Array.prototype,"last",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.last called on null or undefined");var e=this.length>>>0;if(0!==e)return this[e-1]}}),Object.defineProperty(Array.prototype,"pluck",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.pluck called on null or undefined");var e=this.length>>>0;if(0!==e){var t=0===arguments.length?_random(0,e-1):_randomIndex(e,[].concat(Array.prototype.slice.call(arguments)));return Array.prototype.splice.call(this,t,1)[0]}}}),Object.defineProperty(Array.prototype,"pluckMany",{configurable:!0,writable:!0,value:function(e){if(null==this)throw new TypeError("Array.prototype.pluckMany called on null or undefined");var t=this.length>>>0;if(0===t)return[];var r=Math.trunc(e);if(!Number.isInteger(r))throw new Error("Array.prototype.pluckMany want parameter must be an integer");if(r<1)return[];r>t&&(r=t);var n=Array.prototype.splice,a=[],i=t-1;do{a.push(n.call(this,_random(0,i--),1)[0])}while(a.length<r);return a}}),Object.defineProperty(Array.prototype,"pushUnique",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.pushUnique called on null or undefined");var e=arguments.length;if(0===e)return this.length>>>0;for(var t=Array.prototype.indexOf,r=Array.prototype.push,n=0;n<e;++n){var a=arguments[n];-1===t.call(this,a)&&r.call(this,a)}return this.length>>>0}}),Object.defineProperty(Array.prototype,"random",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.random called on null or undefined");var e=this.length>>>0;if(0!==e){return this[0===arguments.length?_random(0,e-1):_randomIndex(e,[].concat(Array.prototype.slice.call(arguments)))]}}}),Object.defineProperty(Array.prototype,"randomMany",{configurable:!0,writable:!0,value:function(e){if(null==this)throw new TypeError("Array.prototype.randomMany called on null or undefined");var t=this.length>>>0;if(0===t)return[];var r=Math.trunc(e);if(!Number.isInteger(r))throw new Error("Array.prototype.randomMany want parameter must be an integer");if(r<1)return[];r>t&&(r=t);var n=new Map,a=[],i=t-1;do{var o=void 0;do{o=_random(0,i)}while(n.has(o));n.set(o,!0),a.push(this[o])}while(a.length<r);return a}}),Object.defineProperty(Array.prototype,"shuffle",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.shuffle called on null or undefined");var e=this.length>>>0;if(0===e)return this;for(var t=e-1;t>0;--t){var r=Math.floor(_nativeMathRandom()*(t+1));if(t!==r){var n=this[t];this[t]=this[r],this[r]=n}}return this}}),Object.defineProperty(Array.prototype,"unshiftUnique",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.unshiftUnique called on null or undefined");var e=arguments.length;if(0===e)return this.length>>>0;for(var t=Array.prototype.indexOf,r=Array.prototype.unshift,n=0;n<e;++n){var a=arguments[n];-1===t.call(this,a)&&r.call(this,a)}return this.length>>>0}}),Object.defineProperty(Function.prototype,"partial",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Function.prototype.partial called on null or undefined");var e=Array.prototype.slice,t=this,r=e.call(arguments,0);return function(){for(var n=[],a=0,i=0;i<r.length;++i)n.push(r[i]===undefined?arguments[a++]:r[i]);return t.apply(this,n.concat(e.call(arguments,a)))}}}),Object.defineProperty(Math,"clamp",{configurable:!0,writable:!0,value:function(e,t,r){var n=Number(e);return Number.isNaN(n)?NaN:n.clamp(t,r)}}),Object.defineProperty(Math,"easeInOut",{configurable:!0,writable:!0,value:function(e){return 1-(Math.cos(Number(e)*Math.PI)+1)/2}}),Object.defineProperty(Number.prototype,"clamp",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Number.prototype.clamp called on null or undefined");if(2!==arguments.length)throw new Error("Number.prototype.clamp called with an incorrect number of parameters");var e=Number(arguments[0]),t=Number(arguments[1]);if(e>t){var r=[t,e];e=r[0],t=r[1]}return Math.min(Math.max(this,e),t)}}),RegExp.escape||function(){var e=/[\\^$*+?.()|[\]{}]/g,t=new RegExp(e.source);Object.defineProperty(RegExp,"escape",{configurable:!0,writable:!0,value:function(r){var n=String(r);return n&&t.test(n)?n.replace(e,"\\$&"):n}})}(),function(){var e=/{(\d+)(?:,([+-]?\d+))?}/g,t=new RegExp(e.source);Object.defineProperty(String,"format",{configurable:!0,writable:!0,value:function(r){function n(e,t,r){if(!t)return e;var n=Math.abs(t)-e.length;if(n<1)return e;var a=String(r).repeat(n);return t<0?e+a:a+e}if(arguments.length<2)return 0===arguments.length?"":r;var a=2===arguments.length&&Array.isArray(arguments[1])?[].concat(_toConsumableArray(arguments[1])):Array.prototype.slice.call(arguments,1);return 0===a.length?r:t.test(r)?(e.lastIndex=0,r.replace(e,function(e,t,r){var i=a[t];if(null==i)return"";for(;"function"==typeof i;)i=i();switch(void 0===i?"undefined":_typeof(i)){case"string":break;case"object":i=JSON.stringify(i);break;default:i=String(i)}return n(i,r?Number.parseInt(r,10):0," ")})):r}})}(),Object.defineProperty(String.prototype,"contains",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.contains called on null or undefined");return-1!==String.prototype.indexOf.apply(this,arguments)}}),Object.defineProperty(String.prototype,"count",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.count called on null or undefined");var e=String(arguments[0]||"");if(""===e)return 0;for(var t=String.prototype.indexOf,r=e.length,n=Number(arguments[1])||0,a=0;-1!==(n=t.call(this,e,n));)++a,n+=r;return a}}),Object.defineProperty(String.prototype,"first",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.first called on null or undefined");return _getCodePointStartAndEnd(String(this),0).char}}),Object.defineProperty(String.prototype,"last",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.last called on null or undefined");var e=String(this);return _getCodePointStartAndEnd(e,e.length-1).char}}),Object.defineProperty(String.prototype,"splice",{configurable:!0,writable:!0,value:function(e,t,r){if(null==this)throw new TypeError("String.prototype.splice called on null or undefined");var n=this.length>>>0;if(0===n)return"";var a=Number(e);Number.isSafeInteger(a)?a<0&&(a+=n)<0&&(a=0):a=0,a>n&&(a=n);var i=Number(t);(!Number.isSafeInteger(i)||i<0)&&(i=0);var o=this.slice(0,a);return void 0!==r&&(o+=r),a+i<n&&(o+=this.slice(a+i)),o}}),Object.defineProperty(String.prototype,"splitOrEmpty",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.splitOrEmpty called on null or undefined");return""===String(this)?[]:String.prototype.split.apply(this,arguments)}}),Object.defineProperty(String.prototype,"toLocaleUpperFirst",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.toLocaleUpperFirst called on null or undefined");var e=String(this),t=_getCodePointStartAndEnd(e,0),r=t.char,n=t.end;return-1===n?"":r.toLocaleUpperCase()+e.slice(n+1)}}),Object.defineProperty(String.prototype,"toUpperFirst",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.toUpperFirst called on null or undefined");var e=String(this),t=_getCodePointStartAndEnd(e,0),r=t.char,n=t.end;return-1===n?"":r.toUpperCase()+e.slice(n+1)}}),Object.defineProperty(Date.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:date)",this.toISOString()]}}),Object.defineProperty(Function.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:eval)","("+this.toString()+")"]}}),Object.defineProperty(Map.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:map)",[].concat(_toConsumableArray(this))]}}),Object.defineProperty(RegExp.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:eval)",this.toString()]}}),Object.defineProperty(Set.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:set)",[].concat(_toConsumableArray(this))]}}),Object.defineProperty(JSON,"reviveWrapper",{configurable:!0,writable:!0,value:function(e,t){if("string"!=typeof e)throw new TypeError("JSON.reviveWrapper code parameter must be a string");return["(revive:eval)",[e,t]]}}),Object.defineProperty(JSON,"_real_parse",{value:JSON.parse}),Object.defineProperty(JSON,"parse",{configurable:!0,writable:!0,value:function value(text,reviver){return JSON._real_parse(text,function(key,val){var value=val;if(Array.isArray(value)&&2===value.length)switch(value[0]){case"(revive:set)":value=new Set(value[1]);break;case"(revive:map)":value=new Map(value[1]);break;case"(revive:date)":value=new Date(value[1]);break;case"(revive:eval)":try{if(Array.isArray(value[1])){var $ReviveData$=value[1][1];value=eval(value[1][0])}else value=eval(value[1])}catch(e){}}else if("string"==typeof value&&"@@revive@@"===value.slice(0,10))try{value=eval(value.slice(10))}catch(e){}if("function"==typeof reviver)try{value=reviver(key,value)}catch(e){}return value})}}),Object.defineProperty(Array.prototype,"contains",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.contains called on null or undefined");return Array.prototype.includes.apply(this,arguments)}}),Object.defineProperty(Array.prototype,"containsAll",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.containsAll called on null or undefined");return Array.prototype.includesAll.apply(this,arguments)}}),Object.defineProperty(Array.prototype,"containsAny",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.containsAny called on null or undefined");return Array.prototype.includesAny.apply(this,arguments)}}),Object.defineProperty(Array.prototype,"flatten",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.flatten called on null or undefined");return Array.prototype.flat.call(this,1/0)}}),Object.defineProperty(String.prototype,"readBracketedList",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.readBracketedList called on null or undefined");for(var e=new RegExp("(?:\\[\\[((?:\\s|\\S)*?)\\]\\])|([^\"'\\s]\\S*)","gm"),t=[],r=void 0;null!==(r=e.exec(this));)r[1]?t.push(r[1]):r[2]&&t.push(r[2]);return t}})}();var Browser=function(){var e=navigator.userAgent.toLowerCase(),t=e.includes("windows phone"),r=Object.freeze({Android:!t&&e.includes("android"),BlackBerry:/blackberry|bb10/.test(e),iOS:!t&&/ip(?:hone|ad|od)/.test(e),Opera:!t&&("object"===_typeof(window.operamini)||e.includes("opera mini")),Windows:t||/iemobile|wpdesktop/.test(e),any:function(){return r.Android||r.BlackBerry||r.iOS||r.Opera||r.Windows}}),n=!r.Windows&&!/khtml|trident|edge/.test(e)&&e.includes("gecko"),a=!e.includes("opera")&&/msie|trident/.test(e),i=a?function(){var t=/(?:msie\s+|rv:)(\d+\.\d)/.exec(e);return t?Number(t[1]):0}():null,o=e.includes("opera")||e.includes(" opr/"),s=o?function(){var t=new RegExp((/khtml|chrome/.test(e)?"opr":"version")+"\\/(\\d+\\.\\d+)"),r=t.exec(e);return r?Number(r[1]):0}():null,u=e.includes("vivaldi");return Object.freeze({userAgent:e,isMobile:r,isGecko:n,isIE:a,ieVersion:i,isOpera:o,operaVersion:s,isVivaldi:u})}(),Has=function(){var e=function(){try{return"function"==typeof document.createElement("audio").canPlayType}catch(e){}return!1}(),t=e&&function(){try{var e=document.createElement("audio").play();return e.catch(function(){}),e instanceof Promise}catch(e){}return!1}(),r=function(){try{return"Blob"in window&&"File"in window&&"FileList"in window&&"FileReader"in window&&!Browser.isMobile.any()&&(!Browser.isOpera||Browser.operaVersion>=15)}catch(e){}return!1}(),n=function(){try{return"geolocation"in navigator&&"function"==typeof navigator.geolocation.getCurrentPosition&&"function"==typeof navigator.geolocation.watchPosition}catch(e){}return!1}(),a=function(){try{return"MutationObserver"in window&&"function"==typeof window.MutationObserver}catch(e){}return!1}(),i=function(){try{return"performance"in window&&"function"==typeof window.performance.now}catch(e){}return!1}(),o=function(){try{return"ontouchstart"in window||!!window.DocumentTouch&&document instanceof window.DocumentTouch||!!navigator.maxTouchPoints||!!navigator.msMaxTouchPoints}catch(e){}return!1}(),s=function(){try{for(var e=new Map([["transition","transitionend"],["MSTransition","msTransitionEnd"],["WebkitTransition","webkitTransitionEnd"],["MozTransition","transitionend"]]),t=[].concat(_toConsumableArray(e.keys())),r=document.createElement("div"),n=0;n<t.length;++n)if(r.style[t[n]]!==undefined)return e.get(t[n])}catch(e){}return!1}();return Object.freeze({audio:e,audioPromise:t,fileAPI:r,geolocation:n,mutationObserver:a,performance:i,touch:o,transitionEndEvent:s})}(),Visibility=function(){function e(){return Boolean(r&&document[r.hiddenProperty])}function t(){return r&&document[r.stateProperty]||"visible"}var r=function(){try{return Object.freeze([{hiddenProperty:"hidden",stateProperty:"visibilityState",changeEvent:"visibilitychange"},{hiddenProperty:"webkitHidden",stateProperty:"webkitVisibilityState",changeEvent:"webkitvisibilitychange"},{hiddenProperty:"mozHidden",stateProperty:"mozVisibilityState",changeEvent:"mozvisibilitychange"},{hiddenProperty:"msHidden",stateProperty:"msVisibilityState",changeEvent:"msvisibilitychange"}].find(function(e){return e.hiddenProperty in document}))}catch(e){}return null}();return Object.freeze(Object.defineProperties({},{isHidden:{value:e},state:{value:t},hiddenProperty:{value:r.hiddenProperty},stateProperty:{value:r.stateProperty},changeEvent:{value:r.changeEvent}}))}(),_ref3=function(){function e(t){if("object"!==(void 0===t?"undefined":_typeof(t))||null===t)return t;if(t instanceof String)return String(t);if(t instanceof Number)return Number(t);if(t instanceof Boolean)return Boolean(t);if("function"==typeof t.clone)return t.clone(!0);if(t.nodeType&&"function"==typeof t.cloneNode)return t.cloneNode(!0);var r=void 0;return t instanceof Array?r=new Array(t.length):t instanceof Date?r=new Date(t.getTime()):t instanceof Map?(r=new Map,t.forEach(function(t,n){return r.set(n,e(t))})):t instanceof RegExp?r=new RegExp(t):t instanceof Set?(r=new Set,t.forEach(function(t){return r.add(e(t))})):r=Object.create(Object.getPrototypeOf(t)),Object.keys(t).forEach(function(n){return r[n]=e(t[n])}),r}function t(e){for(var t=document.createDocumentFragment(),r=document.createElement("p"),n=void 0;null!==(n=e.firstChild);){if(n.nodeType===Node.ELEMENT_NODE){switch(n.nodeName.toUpperCase()){case"BR":if(null!==n.nextSibling&&n.nextSibling.nodeType===Node.ELEMENT_NODE&&"BR"===n.nextSibling.nodeName.toUpperCase()){e.removeChild(n.nextSibling),e.removeChild(n),t.appendChild(r),r=document.createElement("p");continue}if(!r.hasChildNodes()){e.removeChild(n);continue}break;case"ADDRESS":case"ARTICLE":case"ASIDE":case"BLOCKQUOTE":case"CENTER":case"DIV":case"DL":case"FIGURE":case"FOOTER":case"FORM":case"H1":case"H2":case"H3":case"H4":case"H5":case"H6":case"HEADER":case"HR":case"MAIN":case"NAV":case"OL":case"P":case"PRE":case"SECTION":case"TABLE":case"UL":r.hasChildNodes()&&(t.appendChild(r),r=document.createElement("p")),t.appendChild(n);continue}}r.appendChild(n)}r.hasChildNodes()&&t.appendChild(r),e.appendChild(t)}function r(){try{return document.activeElement||null}catch(e){return null}}function n(e,t,r){var n="object"===(void 0===e?"undefined":_typeof(e))?e:document.getElementById(e);if(null==n)return null;var a=Array.isArray(t)?t:[t];jQuery(n).empty();for(var i=0,o=a.length;i<o;++i)if(Story.has(a[i]))return new Wikifier(n,Story.get(a[i]).processText().trim()),n;if(null!=r){var s=String(r).trim();""!==s&&new Wikifier(n,s)}return n}function a(e,t,r){var n=jQuery(document.createElement("div")),a=jQuery(document.createElement("button")),i=jQuery(document.createElement("pre")),o=L10n.get("errorTitle")+": "+(t||"unknown error");return a.addClass("error-toggle").ariaClick({label:L10n.get("errorToggle")},function(){a.hasClass("enabled")?(a.removeClass("enabled"),i.attr({"aria-hidden":!0,hidden:"hidden"})):(a.addClass("enabled"),i.removeAttr("aria-hidden hidden"))}).appendTo(n),jQuery(document.createElement("span")).addClass("error").text(o).appendTo(n),jQuery(document.createElement("code")).text(r).appendTo(i),i.addClass("error-source").attr({"aria-hidden":!0,hidden:"hidden"}).appendTo(n),n.addClass("error-view").appendTo(e),console.warn(o+"\n\t"+r.replace(/\n/g,"\n\t")),!1}function i(e,t){var r=i;switch(void 0===e?"undefined":_typeof(e)){case"number":if(Number.isNaN(e))return t;break;case"object":if(null===e)return t;if(Array.isArray(e))return e.map(function(e){return r(e,t)}).join(", ");if(e instanceof Set)return[].concat(_toConsumableArray(e)).map(function(e){return r(e,t)}).join(", ");if(e instanceof Map){return"{ "+[].concat(_toConsumableArray(e)).map(function(e){var n=_slicedToArray(e,2),a=n[0],i=n[1];return r(a,t)+" → "+r(i,t)}).join(", ")+" }"}return e instanceof Date?e.toLocaleString():"function"==typeof e.toString?e.toString():Object.prototype.toString.call(e);case"function":case"undefined":return t}return String(e)}return Object.freeze(Object.defineProperties({},{clone:{value:e},convertBreaks:{value:t},safeActiveElement:{value:r},setPageElement:{value:n},throwError:{value:a},toStringOrDefault:{value:i}}))

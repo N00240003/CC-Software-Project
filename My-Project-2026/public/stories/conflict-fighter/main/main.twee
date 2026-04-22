@@ -26,7 +26,7 @@ Conflict Resolution Journey
 <<set $score_compromiser    to 0>>
 <<set $score_avoider        to 0>>
 <<set $score_competitor     to 0>>
-<<set $score_accommodator   to 0>>
+<<set $score_peacekeeper   to 0>>
 
 /* ── Story flags (track key decisions) ── */
 /* Set these to true when a major branch is taken */
@@ -39,6 +39,8 @@ Conflict Resolution Journey
 <<set $choice_chapter1 to "">>
 <<set $choice_chapter2 to "">>
 <<set $choice_chapter3 to "">>
+<<set $choice_chapter4 to "">>
+<<set $choice_chapter5 to "">>
 
 /* ── Audio state ── */
 <<set $audioMuted to false>>
@@ -59,7 +61,7 @@ Conflict Resolution Journey
     Compromiser:   <<= $score_compromiser>><br>
     Avoider:       <<= $score_avoider>><br>
     Competitor:    <<= $score_competitor>><br>
-    Accommodator:  <<= $score_accommodator>><br>
+    Peace Keeper:  <<= $score_peacekeeper>><br>
     <hr>
     <strong>Chapter:</strong> <<= $currentChapter>>
 </div>
@@ -101,15 +103,14 @@ Conflict Resolution Journey
 */
 <<set $saveChapter to "Start">>
 
-# Welcome
+! Welcome
 
-This is the beginning of your conflict resolution journey. wohoo
+Hello there user, you are about to transport yourself in this  story full of shapes and their conflicts in every day life.
 
-Before we begin — what's your name?
+Will you be able to help your shape friends?
+And more importantly, will you be able to accept the shape you turn out to be?
 
-<<textbox "$playerName" "Your name">>
-
-[[Begin the journey -> Chapter1_Start]]
+[[Start your story -> Chapter1_Start]]
 
 
 :: GameOver
@@ -137,7 +138,7 @@ Your journey is complete. Here are your results:
         <tr><td>🔄 Compromiser</td>   <td><<= $score_compromiser>></td></tr>
         <tr><td>🚶 Avoider</td>       <td><<= $score_avoider>></td></tr>
         <tr><td>⚔️ Competitor</td>    <td><<= $score_competitor>></td></tr>
-        <tr><td>🫶 Accommodator</td>  <td><<= $score_accommodator>></td></tr>
+        <tr><td>🫶 Peace Keeper</td>  <td><<= $score_peacekeeper>></td></tr>
     </table>
 </div>
 
@@ -146,10 +147,74 @@ Your journey is complete. Here are your results:
 /*
     Put custom CSS here.
 */
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Playfair+Display&display=swap');
+
+/* Background + default text */
+body {
+    background-color: #F5EEDC;
+    color: #580101;
+    font-family: 'Lato', sans-serif;
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    color: #580101;
+    margin-top: 5%;
+    padding-top: 0%;
+}
+
+/* Headers */
+a {
+    color: #580101;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+     color: #7e0404;
+}
+/* Main story container */
+#passages {
+    max-width: 700px;
+    margin: 2rem auto;
+    line-height: 1.6;
+}
+
+input[type="text"] {
+    background-color: #fffaf0;
+    border: 2px solid #580101;
+    color: #580101;
+    padding: 0.5rem;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+}
+
+input[type="text"]:focus {
+    background-color: #fdf6e3;
+    border-color: #8a1c1c;
+    outline: none;
+}
+
+input[type="text"]:hover {
+    background-color: #fdf6e3;   
+    border-color: #8a1c1c;       
+}
 
 /* Hide the default SugarCube saves menu (Laravel handles saves) */
 #ui-bar-body #saves { display: none; }
+#ui-bar{
+    background-color: #F5EEDC;
+    color: #6d1515;
+}
 
+.image_block {
+   display: block;
+    margin: 1rem auto;
+    max-width: 100%;
+    height: auto;
+}
 .results-card {
     background: #f9f9f9;
     border-radius: 8px;
@@ -193,7 +258,7 @@ Your journey is complete. Here are your results:
 }
 
 .save-slot-btn:hover { background: #c7d2fe; }
-.save-slot-empty { color: #9ca3af; font-style: italic; }
+.save-slot-empty { color: #faf3ee; font-style: italic; }
 
 
 :: StoryScript [script]
@@ -221,7 +286,7 @@ window.saveToLaravel = function(slot) {
             score_compromiser:  State.variables.score_compromiser,
             score_avoider:      State.variables.score_avoider,
             score_competitor:   State.variables.score_competitor,
-            score_accommodator: State.variables.score_accommodator,
+            score_peacekeeper: State.variables.score_peacekeeper,
 
             /* Flags */
             flag_choseDialogue: State.variables.flag_choseDialogue,
