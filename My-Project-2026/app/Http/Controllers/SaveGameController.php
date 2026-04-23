@@ -34,7 +34,7 @@ class SaveGameController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'slot' => 'required|integer',
+            'slot' => 'required|integer|between:1,5',
             'chapter' => 'required|string',
             'game_variables' => 'required|array',
         ]);
