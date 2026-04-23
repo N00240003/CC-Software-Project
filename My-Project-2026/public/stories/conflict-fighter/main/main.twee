@@ -128,7 +128,7 @@ Your journey is complete. Here are your results:
 
 :: ResultsDisplay
 /*
-    A reusable passage — include it anywhere with <<include "ResultsDisplay">>
+    A reusable passage —> include it anywhere with <<include "ResultsDisplay">>
     Displays the player's final resolver type.
 */
 <div class="results-card">

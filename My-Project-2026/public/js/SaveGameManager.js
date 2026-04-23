@@ -1,21 +1,31 @@
 class SaveGameManager {
     constructor(frameId, csrfToken) {
-        // whats csrfToken/frameID snd why we extracting them?
+        // Whats csrfToken/frameID and why we extracting them?
+        //csrfToken is Laravel's security token passed in from Blade
+        // —> it's stored so every fetch request can include it in its headers.
         this.frame = document.getElementById(frameId);
+        //frameId is the string 'tweego-frame'
+        // —> it uses that to find the actual iframe element in the DOM and store it as this.frame
+        // so every method can access it without searching the DOM again.
         this.csrfToken = csrfToken;
         this.init(); //Whats this? = Funtion thats calling other functions
     }
 
     init() {
+        // Just a setup method that calls the two things
+        // that need to start running immediately when the page loads
         this.listenForIframeMessages();
         this.bindMuteButton();
     }
 
     promptSaveSlot() {
+        //Called when the player clicks the Save Game button
         const slot = prompt("Save to which slot? (1-5)");
+        // Prompt will show message + input box
         const num = parseInt(slot);
         if (num >= 1 && num <= 5) {
             this.triggerSave(num);
+            // If number is valid slot will be saved
         } else if (slot !== null) {
             alert("Please enter a number between 1 and 5.");
         }
@@ -26,8 +36,8 @@ class SaveGameManager {
         const res = await fetch("/save-game");
         const slots = await res.json();
         const container = document.getElementById("save-slots");
-        container.innerHTML = ""; //Whats going on here, emptying doc to populate with buttons and shi
-
+        container.innerHTML = "";
+        // ^ Clears whatever is currently rendered to refresh UI
         for (let i = 1; i <= 5; i++) {
             // Only alllow 5 slots
 
@@ -65,10 +75,14 @@ class SaveGameManager {
         }
     }
 
-    // Tell iframe to save into slaot
+    // Sends a message into iframe telling SugarCube to trigger a save
     triggerSave(slot) {
-        // whass goinonn
+        // frame.cWindow is windo object in iframe
         this.frame.contentWindow.postMessage(
+            // postMessage takes two arguments:
+            // the message object and the target origin ("*" means any origin)
+            // The message itself is just a plain object with a type so SugarCube knows what to do with it
+            // and the slot number so it knows which slot to save to.
             {
                 type: "TRIGGER_SAVE",
                 slot: slot,
@@ -94,17 +108,22 @@ class SaveGameManager {
     async deleteSlot(id) {
         if (!confirm("Delete this save?")) return;
         await fetch(`/save-game/${id}`, {
+            //sends a DELETE request to /save-game/{id} with the CSRF token in the headers
+            // (Laravel requires this for any non-GET request as a security measure)
             method: "DELETE",
             headers: { "X-CSRF-TOKEN": this.csrfToken },
         });
-        this.loadSlots();
+        this.loadSlots(); //Refresh UI
     }
 
     // Listen for SAVE_GAME messaegs from iFrame
     listenForIframeMessages() {
         window.addEventListener("message", async (event) => {
             if (event.origin !== window.location.origin) return;
-
+            // window.addEventListener("message", ...) runs continuously in the background
+            // waiting for any postMessage to arrive.
+            // The event.origin check is a security measure
+            // —> it ignores any messages that don't come from the same domain as the page.
             if (event.data.type === "SAVE_GAME") {
                 await fetch("/save-game", {
                     method: "POST",
@@ -114,10 +133,14 @@ class SaveGameManager {
                     },
                     body: JSON.stringify(event.data.payload),
                 });
+                // When a SAVE_GAME message arrives it extracts the payload and POSTs it to Laravel
                 this.frame.contentWindow.postMessage(
                     { type: "SAVE_CONFIRMED", slot: event.data.payload.slot },
                     "*",
                 );
+                // After a successful save it sends a SAVE_CONFIRMED message back into the iframe
+                // (so SugarCube can show a confirmation alert)
+
                 this.loadSlots();
             }
         });
